@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = [
+    "baby-bear",
+    "field",
+]
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
