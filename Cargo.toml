@@ -3,6 +3,8 @@ resolver = "2"
 members = [
     "baby-bear",
     "field",
+    "maybe-rayon",
+    "util",
 ]
 
 [profile.release]
