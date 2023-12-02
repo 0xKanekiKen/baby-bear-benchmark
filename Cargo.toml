@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "baby-bear",
+    "r0-baby-bear",
     "field",
     "maybe-rayon",
     "util",
