@@ -25,6 +25,8 @@ use core::{cmp, fmt::Debug, ops};
 
 pub mod baby_bear_canonical;
 
+pub mod baby_bear_montgomery;
+
 /// A pair of fields, one of which is an extension field of the other.
 pub trait Field {
     /// An element of the base field
