@@ -10,3 +10,9 @@ rand_core = "0.6"
 
 [dev-dependencies]
 rand = { version = "0.8", features = ["small_rng"] }
+criterion = "0.5.1"
+
+[[bench]]
+name = "risc0_arithmetic"
+path = "benches/risc0_arithmetic.rs"
+harness = false
