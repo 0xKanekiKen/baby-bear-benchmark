@@ -9,6 +9,21 @@ type Base = BabyBear;
 type EF4 = BinomialExtensionField<BabyBear, 4>;
 type EF5 = BinomialExtensionField<BabyBear, 5>;
 
+fn check_add<F: Field>(c: &mut Criterion, name: &str) 
+where
+    Standard: Distribution<F>,
+{
+    let mut rng = rand::thread_rng();
+    let x = [rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>()];
+    let y = [rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>()];
+
+    c.bench_function(&format!("{} neon_add", name), |b| {
+        b.iter(|| for i in 0..4 {
+            black_box(black_box(x[i]) + black_box(y[i]));
+        })
+    });
+}
+
 fn bench_field<F: Field>(c: &mut Criterion, name: &str) 
 where
     Standard: Distribution<F>,
@@ -145,7 +160,7 @@ where
         )
     });
 
-    c.bench_function(&format!("mul-throughput<{}>", name), |b| {
+    c.bench_function(&format!("{} mul-throughput", name), |b| {
         b.iter_batched(
             || (rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>()) ,
             |(mut x, mut y, mut z, mut w)| {
@@ -158,7 +173,7 @@ where
         )
     });
 
-    c.bench_function(&format!("mul-latency<{}>", name), |b| {
+    c.bench_function(&format!("{} mul-latency", name), |b| {
         b.iter_batched(
             || rng.gen::<F>(),
             |mut x| {
@@ -171,7 +186,7 @@ where
         )
     });
 
-    c.bench_function(&format!("square-throughput<{}>", name), |b| {
+    c.bench_function(&format!("{} square-throughput", name), |b| {
         b.iter_batched(
             || (rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>()) ,
             |(mut x, mut y, mut z, mut w)| {
@@ -184,7 +199,7 @@ where
         )
     });
 
-    c.bench_function(&format!("square-latency<{}>", name), |b| {
+    c.bench_function(&format!("{} square-latency", name), |b| {
         b.iter_batched(
             || rng.gen::<F>(),
             |mut x| {
@@ -213,12 +228,30 @@ fn bench_qunitic_extension(c: &mut Criterion) {
     bench_field::<EF5>(c, name);
 }
 
+fn bench_babybear_neon(c: &mut Criterion) {
+    let name = "NEON BabyBear";
+    check_add::<Base>(c, name);
+}
+
+fn bench_quartic_extension_neon(c: &mut Criterion) {
+    let name = "NEON BinomialExtensionField<BabyBear, 4>";
+    check_add::<EF4>(c, name);
+}
+
+fn bench_qunitic_extension_neon(c: &mut Criterion) {
+    let name = "NEON BinomialExtensionField<BabyBear, 5>";
+    check_add::<EF5>(c, name);
+}
+
+
 criterion_group!(
-    bench_babybear_ef,
+    arithmetic,
     bench_babybear,
     bench_quartic_extension,
-    bench_qunitic_extension
+    bench_qunitic_extension,
+    bench_babybear_neon,
+    bench_quartic_extension_neon,
+    bench_qunitic_extension_neon,
 );
 
-criterion_group!(arithmetic, bench_babybear);
 criterion_main!(arithmetic);
