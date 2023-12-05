@@ -635,8 +635,8 @@ unsafe impl PackedField for PackedBabyBearNeon {
 
 #[cfg(test)]
 mod tests {
-    use p3_field::PrimeField32;
     use super::*;
+    use p3_field::PrimeField32;
 
     type F = BabyBear;
     type P = PackedBabyBearNeon;
@@ -663,7 +663,6 @@ mod tests {
         let rhs = packed_from_canonical(rhs);
         let res = lhs * rhs;
         assert_eq!(res, expected);
-
     }
 
     #[test]
@@ -680,7 +679,6 @@ mod tests {
         let rhs = packed_from_canonical(rhs);
         let res = lhs + rhs;
         assert_eq!(res, expected);
-
     }
 
     #[test]
@@ -697,13 +695,12 @@ mod tests {
         let rhs = packed_from_canonical(rhs);
         let res = lhs - rhs;
         assert_eq!(res, expected);
-
     }
 
     #[test]
     fn test_neg() {
         let val = [0x28267ebf, 0x0b83d23e, 0x67a59e3d, 0x0ba2fb25];
-        let mut expected = [0u32; 4]; 
+        let mut expected = [0u32; 4];
         for i in 0..WIDTH {
             expected[i] = (-BabyBear::new(val[i])).as_canonical_u32();
         }

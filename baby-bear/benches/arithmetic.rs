@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion, BatchSize};
+use criterion::{black_box, criterion_group, criterion_main, BatchSize, Criterion};
 use p3_baby_bear::BabyBear;
 use p3_field::{extension::BinomialExtensionField, Field};
 use rand::distributions::Standard;
@@ -9,7 +9,7 @@ type Base = BabyBear;
 type EF4 = BinomialExtensionField<BabyBear, 4>;
 type EF5 = BinomialExtensionField<BabyBear, 5>;
 
-fn bench_field<F: Field>(c: &mut Criterion, name: &str) 
+fn bench_field<F: Field>(c: &mut Criterion, name: &str)
 where
     Standard: Distribution<F>,
 {
@@ -147,7 +147,14 @@ where
 
     c.bench_function(&format!("{} mul-throughput", name), |b| {
         b.iter_batched(
-            || (rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>()) ,
+            || {
+                (
+                    rng.gen::<F>(),
+                    rng.gen::<F>(),
+                    rng.gen::<F>(),
+                    rng.gen::<F>(),
+                )
+            },
             |(mut x, mut y, mut z, mut w)| {
                 for _ in 0..25 {
                     (x, y, z, w) = (x * y, y * z, z * w, w * x);
@@ -173,7 +180,14 @@ where
 
     c.bench_function(&format!("{} square-throughput", name), |b| {
         b.iter_batched(
-            || (rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>(), rng.gen::<F>()) ,
+            || {
+                (
+                    rng.gen::<F>(),
+                    rng.gen::<F>(),
+                    rng.gen::<F>(),
+                    rng.gen::<F>(),
+                )
+            },
             |(mut x, mut y, mut z, mut w)| {
                 for _ in 0..25 {
                     (x, y, z, w) = (x.square(), y.square(), z.square(), w.square());
