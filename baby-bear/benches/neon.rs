@@ -5,7 +5,73 @@ use rand::Rng;
 
 type Base = BabyBear;
 
-fn bench_scalar(c: &mut Criterion, iteration: u32)
+fn field_operations(c: &mut Criterion) {
+    let mut rng = rand::thread_rng();
+
+    c.bench_function("scalar add", |b| {
+        let x = [rng.gen::<Base>(); 4];
+        let y = [rng.gen::<Base>(); 4];
+        let mut res = [Base::zero(); 4];
+        b.iter(|| for i in 0..4 {
+            res[i] = black_box(black_box(x[i]) + black_box(y[i]));
+        })
+    });
+
+    c.bench_function("scalar mul", |b| {
+        let x = [rng.gen::<Base>(); 4];
+        let y = [rng.gen::<Base>(); 4];
+        let mut res = [Base::zero(); 4];
+        b.iter(|| for i in 0..4 {
+            res[i] = black_box(black_box(x[i]) * black_box(y[i]));
+        })
+    });
+
+    c.bench_function("scalar sub", |b| {
+        let x = [rng.gen::<Base>(); 4];
+        let y = [rng.gen::<Base>(); 4];
+        let mut res = [Base::zero(); 4];
+        b.iter(|| for i in 0..4 {
+            res[i] = black_box(black_box(x[i]) - black_box(y[i]));
+        })
+    });
+
+    c.bench_function("scalar square", |b| {
+        let x = [rng.gen::<Base>(); 4];
+        let mut res = [Base::zero(); 4];
+        b.iter(|| for i in 0..4 {
+            res[i] = black_box(black_box(x[i]).square());
+        })
+    });
+
+    c.bench_function("neon add", |b| {
+        let x = [rng.gen::<Base>(); 4];
+        let y = [rng.gen::<Base>(); 4];
+        let mut res = PackedBabyBearNeon([Base::zero(); 4]);
+        b.iter(|| res = black_box(PackedBabyBearNeon(black_box(x)) + PackedBabyBearNeon(black_box(y))))
+    });
+
+    c.bench_function("neon mul", |b| {
+        let x = [rng.gen::<Base>(); 4];
+        let y = [rng.gen::<Base>(); 4];
+        let mut res = PackedBabyBearNeon([Base::zero(); 4]);
+        b.iter(|| res = black_box(PackedBabyBearNeon(black_box(x)) * PackedBabyBearNeon(black_box(y))))
+    });
+
+    c.bench_function("neon sub", |b| {
+        let x = [rng.gen::<Base>(); 4];
+        let y = [rng.gen::<Base>(); 4];
+        let mut res = PackedBabyBearNeon([Base::zero(); 4]);
+        b.iter(|| res = black_box(PackedBabyBearNeon(black_box(x)) - PackedBabyBearNeon(black_box(y))))
+    });
+
+    c.bench_function("neon square", |b| {
+        let x = [rng.gen::<Base>(); 4];
+        let mut res = PackedBabyBearNeon([Base::zero(); 4]);
+        b.iter(|| res = PackedBabyBearNeon(black_box(x)).square())
+    });
+}
+
+fn bench_latency_throughputs(c: &mut Criterion, iteration: u32)
 {
     let mut rng = rand::thread_rng();
 
@@ -136,38 +202,6 @@ fn bench_scalar(c: &mut Criterion, iteration: u32)
             BatchSize::SmallInput,
         )
     });
-}
-
-fn bench_neon(c: &mut Criterion, iteration: u32)
-{
-    let mut rng = rand::thread_rng();
-
-    c.bench_function("neon add", |b| {
-        let x = [rng.gen::<Base>(); 4];
-        let y = [rng.gen::<Base>(); 4];
-        let mut res = PackedBabyBearNeon([Base::zero(); 4]);
-        b.iter(|| res = black_box(PackedBabyBearNeon(black_box(x)) + PackedBabyBearNeon(black_box(y))))
-    });
-
-    c.bench_function("neon mul", |b| {
-        let x = [rng.gen::<Base>(); 4];
-        let y = [rng.gen::<Base>(); 4];
-        let mut res = PackedBabyBearNeon([Base::zero(); 4]);
-        b.iter(|| res = black_box(PackedBabyBearNeon(black_box(x)) * PackedBabyBearNeon(black_box(y))))
-    });
-
-    c.bench_function("neon sub", |b| {
-        let x = [rng.gen::<Base>(); 4];
-        let y = [rng.gen::<Base>(); 4];
-        let mut res = PackedBabyBearNeon([Base::zero(); 4]);
-        b.iter(|| res = black_box(PackedBabyBearNeon(black_box(x)) - PackedBabyBearNeon(black_box(y))))
-    });
-
-    c.bench_function("neon square", |b| {
-        let x = [rng.gen::<Base>(); 4];
-        let mut res = PackedBabyBearNeon([Base::zero(); 4]);
-        b.iter(|| res = PackedBabyBearNeon(black_box(x)).square())
-    });
 
     c.bench_function(&format!("neon add-latency {}k", iteration/1000), |b| {
         let mut res = Base::zero();
@@ -248,20 +282,15 @@ fn bench_neon(c: &mut Criterion, iteration: u32)
     });
 }
 
-fn tenk_bench(c: &mut Criterion) {
-    bench_scalar(c, 10000);
-    bench_neon(c, 10000);
-}
-
-fn thousandk_bench(c: &mut Criterion) {
-    bench_scalar(c, 100000);
-    bench_neon(c, 100000);
+fn neon_vs_scalar(c: &mut Criterion) {
+    field_operations(c);
+    bench_latency_throughputs(c, 10000);
+    bench_latency_throughputs(c, 100000);
 }
 
 criterion_group!(
     neon,
-    tenk_bench,
-    thousandk_bench,
+    neon_vs_scalar,
 );
 
 criterion_main!(neon);
