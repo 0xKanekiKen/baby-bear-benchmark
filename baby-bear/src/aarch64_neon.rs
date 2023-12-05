@@ -635,6 +635,7 @@ unsafe impl PackedField for PackedBabyBearNeon {
 
 #[cfg(test)]
 mod tests {
+    use p3_field::PrimeField32;
     use super::*;
 
     type F = BabyBear;
@@ -649,64 +650,65 @@ mod tests {
     }
 
     #[test]
-    fn test_add(lhs: [u32; WIDTH], rhs: [u32; WIDTH]) {
-        let lhs = packed_from_canonical(lhs);
-        let rhs = packed_from_canonical(rhs);
-        let expected = packed_from_canonical(
-            lhs.iter()
-                .zip(rhs.iter())
-                .map(|(l, r)| l + r)
-                .collect::<Vec<_>>()
-                .try_into()
-                .unwrap(),
-        );
-        let res = lhs + rhs;
-        assert_eq!(res, expected);
-    }
+    fn test_mul() {
+        let lhs: [u32; WIDTH] = [3, 4, 5, 6];
+        let rhs: [u32; WIDTH] = [1, 2, 3, 4];
+        let mut expected: [u32; 4] = [0u32; 4];
+        for i in 0..WIDTH {
+            expected[i] = (BabyBear::new(lhs[i]) * BabyBear::new(rhs[i])).as_canonical_u32();
+        }
 
-    #[test]
-    fn test_mul(lhs: [u32; WIDTH], rhs: [u32; WIDTH]) {
+        let expected = packed_from_canonical(expected);
         let lhs = packed_from_canonical(lhs);
         let rhs = packed_from_canonical(rhs);
-        let expected = packed_from_canonical(
-            lhs.iter()
-                .zip(rhs.iter())
-                .map(|(l, r)| l * r)
-                .collect::<Vec<_>>()
-                .try_into()
-                .unwrap(),
-        );
         let res = lhs * rhs;
         assert_eq!(res, expected);
+
     }
 
     #[test]
-    fn test_neg(val: [u32; WIDTH]) {
-        let val = packed_from_canonical(val);
-        let expected = packed_from_canonical(
-            val.iter()
-                .map(|v| -v)
-                .collect::<Vec<_>>()
-                .try_into()
-                .unwrap(),
-        );
-        let res = -val;
-        assert_eq!(res, expected);
-    }
+    fn test_add() {
+        let lhs: [u32; WIDTH] = [3, 4, 5, 6];
+        let rhs: [u32; WIDTH] = [1, 2, 3, 4];
+        let mut expected: [u32; 4] = [0u32; 4];
+        for i in 0..WIDTH {
+            expected[i] = (BabyBear::new(lhs[i]) + BabyBear::new(rhs[i])).as_canonical_u32();
+        }
 
-    #[test]
-    fn test_sub(lhs: [u32; WIDTH], rhs: [u32; WIDTH]) {
+        let expected = packed_from_canonical(expected);
         let lhs = packed_from_canonical(lhs);
         let rhs = packed_from_canonical(rhs);
-        let expected = packed_from_canonical(
-            lhs.iter()
-                .zip(rhs.iter())
-                .map(|(l, r)| l - r)
-                .collect::<Vec<_>>()
-                .try_into()
-                .unwrap(),
-        );
+        let res = lhs + rhs;
+        assert_eq!(res, expected);
+
+    }
+
+    #[test]
+    fn test_sub() {
+        let lhs: [u32; WIDTH] = [3, 4, 5, 6];
+        let rhs: [u32; WIDTH] = [1, 2, 3, 4];
+        let mut expected: [u32; 4] = [0u32; 4];
+        for i in 0..WIDTH {
+            expected[i] = (BabyBear::new(lhs[i]) - BabyBear::new(rhs[i])).as_canonical_u32();
+        }
+
+        let expected = packed_from_canonical(expected);
+        let lhs = packed_from_canonical(lhs);
+        let rhs = packed_from_canonical(rhs);
         let res = lhs - rhs;
+        assert_eq!(res, expected);
+
+    }
+
+    #[test]
+    fn test_neg() {
+        let val = [0x28267ebf, 0x0b83d23e, 0x67a59e3d, 0x0ba2fb25];
+        let mut expected = [0u32; 4]; 
+        for i in 0..WIDTH {
+            expected[i] = (-BabyBear::new(val[i])).as_canonical_u32();
+        }
+        let expected = packed_from_canonical(expected);
+        let res = -packed_from_canonical(val);
         assert_eq!(res, expected);
     }
 
