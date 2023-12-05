@@ -10,6 +10,9 @@ use rand::distributions::{Distribution, Standard};
 use rand::Rng;
 
 const P: u32 = 0x78000001;
+const MONTY_BITS: u32 = 31;
+const MONTY_MASK: u32 = (1 << MONTY_BITS) - 1;
+const MONTY_MU: u32 = 0x8000001;
 
 /// The prime field `2^31 - 2^27 + 1`, a.k.a. the Baby Bear field.
 #[derive(Copy, Clone, Default, Eq, Hash, PartialEq)]
@@ -22,7 +25,7 @@ impl BabyBear {
     /// create a new `BabyBear` from a canonical `u32`.
     #[inline]
     pub(crate) const fn new(n: u32) -> Self {
-        Self { value: n % P }
+        Self { value: to_monty(n) }
     }
 }
 
@@ -72,13 +75,13 @@ impl AbstractField for BabyBear {
         Self { value: 0 }
     }
     fn one() -> Self {
-        Self { value: 1 }
+        Self { value: 0x7ffffff }
     }
     fn two() -> Self {
-        Self { value: 2 }
+        Self { value: 0xffffffe }
     }
     fn neg_one() -> Self {
-        Self { value: 0x78000000 }
+        Self { value: 0x70000002 }
     }
 
     #[inline]
@@ -121,13 +124,13 @@ impl AbstractField for BabyBear {
 
     #[inline]
     fn from_wrapped_u32(n: u32) -> Self {
-        Self { value: n % P }
+        Self { value: to_monty(n) }
     }
 
     #[inline]
     fn from_wrapped_u64(n: u64) -> Self {
         Self {
-            value: (n % P as u64) as u32,
+            value: to_monty_64(n),
         }
     }
 
@@ -138,6 +141,9 @@ impl AbstractField for BabyBear {
 }
 
 impl Field for BabyBear {
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+    type Packing = crate::PackedBabyBearNeon;
+    #[cfg(not(all(target_arch = "aarch64", target_feature = "neon")))]
     type Packing = Self;
 
     #[inline]
@@ -216,7 +222,7 @@ impl PrimeField32 for BabyBear {
 
     #[inline]
     fn as_canonical_u32(&self) -> u32 {
-        self.value
+        from_monty(self.value)
     }
 }
 
@@ -292,9 +298,10 @@ impl Mul for BabyBear {
 
     #[inline]
     fn mul(self, rhs: Self) -> Self {
-        let product = (self.value as u64) * (rhs.value as u64);
-        let value = (product % (P as u64)) as u32;
-        Self { value }
+        let long_prod = self.value as u64 * rhs.value as u64;
+        Self {
+            value: monty_reduce(long_prod),
+        }
     }
 }
 
@@ -319,5 +326,99 @@ impl Div for BabyBear {
     #[inline]
     fn div(self, rhs: Self) -> Self {
         self * rhs.inverse()
+    }
+}
+
+#[inline]
+#[must_use]
+const fn to_monty(x: u32) -> u32 {
+    (((x as u64) << 31) % P as u64) as u32
+}
+
+#[inline]
+#[must_use]
+fn to_monty_64(x: u64) -> u32 {
+    (((x as u128) << 31) % P as u128) as u32
+}
+
+#[inline]
+#[must_use]
+fn from_monty(x: u32) -> u32 {
+    monty_reduce(x as u64)
+}
+
+/// Montgomery reduction of a value in `0..P << MONTY_BITS`.
+#[inline]
+#[must_use]
+fn monty_reduce(x: u64) -> u32 {
+    let t = x.wrapping_mul(MONTY_MU as u64) & (MONTY_MASK as u64);
+    let u = t * (P as u64);
+
+    let (x_sub_u, over) = x.overflowing_sub(u);
+    let x_sub_u_hi = (x_sub_u >> 31) as u32;
+    let corr = if over { P } else { 0 };
+    x_sub_u_hi.wrapping_add(corr)
+}
+
+#[cfg(test)]
+mod tests {
+    use p3_field::PrimeField64;
+
+    use super::*;
+
+    type F = BabyBear;
+
+    #[test]
+    fn test_baby_bear() {
+        let f = F::from_canonical_u32(100);
+        assert_eq!(f.as_canonical_u64(), 100);
+
+        let f = F::from_canonical_u32(0);
+        assert!(f.is_zero());
+
+        let f = F::from_wrapped_u32(F::ORDER_U32);
+        assert!(f.is_zero());
+
+        let f_1 = F::one();
+        let f_1_copy = F::from_canonical_u32(1);
+
+        let expected_result = F::zero();
+        assert_eq!(f_1 - f_1_copy, expected_result);
+
+        let expected_result = F::two();
+        assert_eq!(f_1 + f_1_copy, expected_result);
+
+        let f_2 = F::from_canonical_u32(2);
+        let expected_result = F::from_canonical_u32(3);
+        assert_eq!(f_1 + f_1_copy * f_2, expected_result);
+
+        let expected_result = F::from_canonical_u32(5);
+        assert_eq!(f_1 + f_2 * f_2, expected_result);
+
+        let f_p_minus_1 = F::from_canonical_u32(F::ORDER_U32 - 1);
+        let expected_result = F::zero();
+        assert_eq!(f_1 + f_p_minus_1, expected_result);
+
+        let f_p_minus_2 = F::from_canonical_u32(F::ORDER_U32 - 2);
+        let expected_result = F::from_canonical_u32(F::ORDER_U32 - 3);
+        assert_eq!(f_p_minus_1 + f_p_minus_2, expected_result);
+
+        let expected_result = F::from_canonical_u32(1);
+        assert_eq!(f_p_minus_1 - f_p_minus_2, expected_result);
+
+        let expected_result = f_p_minus_1;
+        assert_eq!(f_p_minus_2 - f_p_minus_1, expected_result);
+
+        let expected_result = f_p_minus_2;
+        assert_eq!(f_p_minus_1 - f_1, expected_result);
+
+        let m1 = F::from_canonical_u32(0x34167c58);
+        let m2 = F::from_canonical_u32(0x61f3207b);
+        let expected_prod = F::from_canonical_u32(0x1b5c8046);
+        assert_eq!(m1 * m2, expected_prod);
+
+        assert_eq!(m1.exp_u64(1725656503).exp_const_u64::<7>(), m1);
+        assert_eq!(m2.exp_u64(1725656503).exp_const_u64::<7>(), m2);
+        assert_eq!(f_2.exp_u64(1725656503).exp_const_u64::<7>(), f_2);
     }
 }
