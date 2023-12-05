@@ -15,3 +15,8 @@ criterion = "0.5.1"
 name = "arithmetic"
 path = "benches/arithmetic.rs"
 harness = false
+
+[[bench]]
+name = "neon"
+path = "benches/neon.rs"
+harness = false
