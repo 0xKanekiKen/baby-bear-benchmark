@@ -649,6 +649,68 @@ mod tests {
     }
 
     #[test]
+    fn test_add(lhs: [u32; WIDTH], rhs: [u32; WIDTH]) {
+        let lhs = packed_from_canonical(lhs);
+        let rhs = packed_from_canonical(rhs);
+        let expected = packed_from_canonical(
+            lhs.iter()
+                .zip(rhs.iter())
+                .map(|(l, r)| l + r)
+                .collect::<Vec<_>>()
+                .try_into()
+                .unwrap(),
+        );
+        let res = lhs + rhs;
+        assert_eq!(res, expected);
+    }
+
+    #[test]
+    fn test_mul(lhs: [u32; WIDTH], rhs: [u32; WIDTH]) {
+        let lhs = packed_from_canonical(lhs);
+        let rhs = packed_from_canonical(rhs);
+        let expected = packed_from_canonical(
+            lhs.iter()
+                .zip(rhs.iter())
+                .map(|(l, r)| l * r)
+                .collect::<Vec<_>>()
+                .try_into()
+                .unwrap(),
+        );
+        let res = lhs * rhs;
+        assert_eq!(res, expected);
+    }
+
+    #[test]
+    fn test_neg(val: [u32; WIDTH]) {
+        let val = packed_from_canonical(val);
+        let expected = packed_from_canonical(
+            val.iter()
+                .map(|v| -v)
+                .collect::<Vec<_>>()
+                .try_into()
+                .unwrap(),
+        );
+        let res = -val;
+        assert_eq!(res, expected);
+    }
+
+    #[test]
+    fn test_sub(lhs: [u32; WIDTH], rhs: [u32; WIDTH]) {
+        let lhs = packed_from_canonical(lhs);
+        let rhs = packed_from_canonical(rhs);
+        let expected = packed_from_canonical(
+            lhs.iter()
+                .zip(rhs.iter())
+                .map(|(l, r)| l - r)
+                .collect::<Vec<_>>()
+                .try_into()
+                .unwrap(),
+        );
+        let res = lhs - rhs;
+        assert_eq!(res, expected);
+    }
+
+    #[test]
     fn test_interleave_1() {
         let vec0 = packed_from_canonical([1, 2, 3, 4]);
         let vec1 = packed_from_canonical([5, 6, 7, 8]);
