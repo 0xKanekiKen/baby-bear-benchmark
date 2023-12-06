@@ -34,7 +34,7 @@ pub fn benchmark_canonical(c: &mut Criterion)
         b.iter(|| black_box(black_box(x).add(black_box(y))))
     });
 
-    c.bench_function("canonical add-latency", |b| {
+    c.bench_function("canonical add-latency-10k", |b| {
         b.iter_batched(
             || {
                 let mut vec: Vec<Canonical> = Vec::new();
@@ -48,7 +48,7 @@ pub fn benchmark_canonical(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical add-throughput", |b| {
+    c.bench_function("canonical add-throughput-10k", |b| {
         b.iter_batched(
             || {
                 (
@@ -65,7 +65,7 @@ pub fn benchmark_canonical(c: &mut Criterion)
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j): (Canonical, Canonical, Canonical, Canonical, Canonical, Canonical, Canonical, Canonical, Canonical, Canonical)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a + b,
                         b + c,
@@ -85,7 +85,7 @@ pub fn benchmark_canonical(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical sub-latency", |b| {
+    c.bench_function("canonical sub-latency-10k", |b| {
         b.iter_batched(
             || {
                 let mut vec: Vec<Canonical> = Vec::new();
@@ -99,7 +99,7 @@ pub fn benchmark_canonical(c: &mut Criterion)
         )
     });
 
-    c.bench_function("Canonical sub-throughput", |b| {
+    c.bench_function("Canonical sub-throughput-10k", |b| {
         b.iter_batched(
             || {
                 (
@@ -116,7 +116,7 @@ pub fn benchmark_canonical(c: &mut Criterion)
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j): (Canonical, Canonical, Canonical, Canonical, Canonical, Canonical, Canonical, Canonical, Canonical, Canonical)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a - b,
                         b - c,
@@ -136,14 +136,14 @@ pub fn benchmark_canonical(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical mul-throughput", |b| {
+    c.bench_function("canonical mul-throughput-10k", |b| {
         b.iter_batched(
             || (Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),),
             |(mut x, mut y, mut z, mut w) : (Canonical, Canonical, Canonical, Canonical)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x * y, y * z, z * w, w * x);
                 }
                 (x, y, z, w)
@@ -152,11 +152,11 @@ pub fn benchmark_canonical(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical mul-latency", |b| {
+    c.bench_function("canonical mul-latency-10k", |b| {
         b.iter_batched(
             || Elem::random(&mut rng),
             |mut x: Canonical| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x * x;
                 }
                 x
@@ -165,14 +165,14 @@ pub fn benchmark_canonical(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical sqr-throughput>", |b| {
+    c.bench_function("canonical sqr-throughput-10k>", |b| {
         b.iter_batched(
             || (Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),),
             |(mut x, mut y, mut z, mut w) : (Canonical, Canonical, Canonical, Canonical)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x.clone() * x.clone(), y.clone() * y.clone(), z.clone() * z.clone(), w.clone() * w.clone());
                 }
                 (x, y, z, w)
@@ -181,11 +181,11 @@ pub fn benchmark_canonical(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical sqr-latency", |b| {
+    c.bench_function("canonical sqr-latency-10k", |b| {
         b.iter_batched(
             || Elem::random(&mut rng),
             |mut x: Canonical| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x.clone() * x.clone();
                 }
                 x
@@ -221,7 +221,7 @@ pub fn benchmark_montgomery(c: &mut Criterion)
         b.iter(|| black_box(black_box(x).add(black_box(y))))
     });
 
-    c.bench_function("montgomery add-latency", |b| {
+    c.bench_function("montgomery add-latency-10k", |b| {
         b.iter_batched(
             || {
                 let mut vec: Vec<Montgomery> = Vec::new();
@@ -235,7 +235,7 @@ pub fn benchmark_montgomery(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery add-throughput", |b| {
+    c.bench_function("montgomery add-throughput-10k", |b| {
         b.iter_batched(
             || {
                 (
@@ -252,7 +252,7 @@ pub fn benchmark_montgomery(c: &mut Criterion)
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j): (Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a + b,
                         b + c,
@@ -272,7 +272,7 @@ pub fn benchmark_montgomery(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery sub-latency", |b| {
+    c.bench_function("montgomery sub-latency-10k", |b| {
         b.iter_batched(
             || {
                 let mut vec: Vec<Montgomery> = Vec::new();
@@ -286,7 +286,7 @@ pub fn benchmark_montgomery(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery sub-throughput", |b| {
+    c.bench_function("montgomery sub-throughput-10k", |b| {
         b.iter_batched(
             || {
                 (
@@ -303,7 +303,7 @@ pub fn benchmark_montgomery(c: &mut Criterion)
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j): (Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery, Montgomery)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a - b,
                         b - c,
@@ -323,14 +323,14 @@ pub fn benchmark_montgomery(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery mul-throughput", |b| {
+    c.bench_function("montgomery mul-throughput-10k", |b| {
         b.iter_batched(
             || (Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),),
             |(mut x, mut y, mut z, mut w) : (Montgomery, Montgomery, Montgomery, Montgomery)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x * y, y * z, z * w, w * x);
                 }
                 (x, y, z, w)
@@ -339,11 +339,11 @@ pub fn benchmark_montgomery(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery mul-latency", |b| {
+    c.bench_function("montgomery mul-latency-10k", |b| {
         b.iter_batched(
             || Elem::random(&mut rng),
             |mut x: Montgomery| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x * x;
                 }
                 x
@@ -352,14 +352,14 @@ pub fn benchmark_montgomery(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery sqr-throughput>", |b| {
+    c.bench_function("montgomery sqr-throughput-10k>", |b| {
         b.iter_batched(
             || (Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),),
             |(mut x, mut y, mut z, mut w) : (Montgomery, Montgomery, Montgomery, Montgomery)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x.clone() * x.clone(), y.clone() * y.clone(), z.clone() * z.clone(), w.clone() * w.clone());
                 }
                 (x, y, z, w)
@@ -368,11 +368,11 @@ pub fn benchmark_montgomery(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery sqr-latency", |b| {
+    c.bench_function("montgomery sqr-latency-10k", |b| {
         b.iter_batched(
             || Elem::random(&mut rng),
             |mut x: Montgomery| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x.clone() * x.clone();
                 }
                 x
@@ -408,7 +408,7 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
         b.iter(|| black_box(black_box(x).add(black_box(y))))
     });
 
-    c.bench_function("canonical_EXT add-latency", |b| {
+    c.bench_function("canonical_EXT add-latency-10k", |b| {
         b.iter_batched(
             || {
                 let mut vec: Vec<CanonicalExt> = Vec::new();
@@ -422,7 +422,7 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical_EXT add-throughput", |b| {
+    c.bench_function("canonical_EXT add-throughput-10k", |b| {
         b.iter_batched(
             || {
                 (
@@ -439,7 +439,7 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j): (CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a + b,
                         b + c,
@@ -459,7 +459,7 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
         )
     });
     
-    c.bench_function("canonical_EXT sub-latency", |b| {
+    c.bench_function("canonical_EXT sub-latency-10k", |b| {
         b.iter_batched(
             || {
                 let mut vec: Vec<CanonicalExt> = Vec::new();
@@ -473,7 +473,7 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical_EXT sub-throughput", |b| {
+    c.bench_function("canonical_EXT sub-throughput-10k", |b| {
         b.iter_batched(
             || {
                 (
@@ -490,7 +490,7 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j): (CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a - b,
                         b - c,
@@ -510,14 +510,14 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical_EXT mul-throughput", |b| {
+    c.bench_function("canonical_EXT mul-throughput-10k", |b| {
         b.iter_batched(
             || (Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),),
             |(mut x, mut y, mut z, mut w) : (CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x * y, y * z, z * w, w * x);
                 }
                 (x, y, z, w)
@@ -526,11 +526,11 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical_EXT mul-latency", |b| {
+    c.bench_function("canonical_EXT mul-latency-10k", |b| {
         b.iter_batched(
             || Elem::random(&mut rng),
             |mut x: CanonicalExt| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x * x;
                 }
                 x
@@ -539,14 +539,14 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical_EXT sqr-throughput>", |b| {
+    c.bench_function("canonical_EXT sqr-throughput-10k>", |b| {
         b.iter_batched(
             || (Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),),
             |(mut x, mut y, mut z, mut w) : (CanonicalExt, CanonicalExt, CanonicalExt, CanonicalExt)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x.clone() * x.clone(), y.clone() * y.clone(), z.clone() * z.clone(), w.clone() * w.clone());
                 }
                 (x, y, z, w)
@@ -555,11 +555,11 @@ pub fn benchmark_canonical_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("canonical_EXT sqr-latency", |b| {
+    c.bench_function("canonical_EXT sqr-latency-10k", |b| {
         b.iter_batched(
             || Elem::random(&mut rng),
             |mut x: CanonicalExt| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x.clone() * x.clone();
                 }
                 x
@@ -594,7 +594,7 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
         b.iter(|| black_box(black_box(x).add(black_box(y))))
     });
 
-    c.bench_function("montgomery_EXT add-latency", |b| {
+    c.bench_function("montgomery_EXT add-latency-10k", |b| {
         b.iter_batched(
             || {
                 let mut vec: Vec<MontgomeryExt> = Vec::new();
@@ -608,7 +608,7 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery_EXT add-throughput", |b| {
+    c.bench_function("montgomery_EXT add-throughput-10k", |b| {
         b.iter_batched(
             || {
                 (
@@ -625,7 +625,7 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j): (MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a + b,
                         b + c,
@@ -645,7 +645,7 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery_EXT sub-latency", |b| {
+    c.bench_function("montgomery_EXT sub-latency-10k", |b| {
         b.iter_batched(
             || {
                 let mut vec: Vec<MontgomeryExt> = Vec::new();
@@ -659,7 +659,7 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery_EXT sub-throughput", |b| {
+    c.bench_function("montgomery_EXT sub-throughput-10k", |b| {
         b.iter_batched(
             || {
                 (
@@ -676,7 +676,7 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j): (MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a - b,
                         b - c,
@@ -696,14 +696,14 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery_EXT mul-throughput", |b| {
+    c.bench_function("montgomery_EXT mul-throughput-10k", |b| {
         b.iter_batched(
             || (Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),),
             |(mut x, mut y, mut z, mut w) : (MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x * y, y * z, z * w, w * x);
                 }
                 (x, y, z, w)
@@ -712,11 +712,11 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery_EXT mul-latency", |b| {
+    c.bench_function("montgomery_EXT mul-latency-10k", |b| {
         b.iter_batched(
             || Elem::random(&mut rng),
             |mut x: MontgomeryExt| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x * x;
                 }
                 x
@@ -725,14 +725,14 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery_EXT sqr-throughput>", |b| {
+    c.bench_function("montgomery_EXT sqr-throughput-10k>", |b| {
         b.iter_batched(
             || (Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),
             Elem::random(&mut rng),),
             |(mut x, mut y, mut z, mut w) : (MontgomeryExt, MontgomeryExt, MontgomeryExt, MontgomeryExt)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x.clone() * x.clone(), y.clone() * y.clone(), z.clone() * z.clone(), w.clone() * w.clone());
                 }
                 (x, y, z, w)
@@ -741,11 +741,11 @@ fn benchmark_montgomery_ext(c: &mut Criterion)
         )
     });
 
-    c.bench_function("montgomery_EXT sqr-latency", |b| {
+    c.bench_function("montgomery_EXT sqr-latency-10k", |b| {
         b.iter_batched(
             || Elem::random(&mut rng),
             |mut x: MontgomeryExt| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x.clone() * x.clone();
                 }
                 x

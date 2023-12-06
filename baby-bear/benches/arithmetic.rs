@@ -43,7 +43,7 @@ where
         b.iter(|| black_box(black_box(x)).inverse())
     });
 
-    c.bench_function(&format!("{} add-latency", name), |b| {
+    c.bench_function(&format!("{} add-latency-10k", name), |b| {
         b.iter_batched(
             || {
                 let mut vec = Vec::new();
@@ -57,7 +57,7 @@ where
         )
     });
 
-    c.bench_function(&format!("{} add-throughput", name), |b| {
+    c.bench_function(&format!("{} add-throughput-10k", name), |b| {
         b.iter_batched(
             || {
                 (
@@ -74,7 +74,7 @@ where
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a + b,
                         b + c,
@@ -94,7 +94,7 @@ where
         )
     });
 
-    c.bench_function(&format!("{} sub-latency", name), |b| {
+    c.bench_function(&format!("{} sub-latency-10k", name), |b| {
         b.iter_batched(
             || {
                 let mut vec = Vec::new();
@@ -108,7 +108,7 @@ where
         )
     });
 
-    c.bench_function(&format!("{} sub-throughput", name), |b| {
+    c.bench_function(&format!("{} sub-throughput-10k", name), |b| {
         b.iter_batched(
             || {
                 (
@@ -125,7 +125,7 @@ where
                 )
             },
             |(mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h, mut i, mut j)| {
-                for _ in 0..1000 {
+                for _ in 0..10000 {
                     (a, b, c, d, e, f, g, h, i, j) = (
                         a - b,
                         b - c,
@@ -145,7 +145,7 @@ where
         )
     });
 
-    c.bench_function(&format!("{} mul-throughput", name), |b| {
+    c.bench_function(&format!("{} mul-throughput-10k", name), |b| {
         b.iter_batched(
             || {
                 (
@@ -156,7 +156,7 @@ where
                 )
             },
             |(mut x, mut y, mut z, mut w)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x * y, y * z, z * w, w * x);
                 }
                 (x, y, z, w)
@@ -165,11 +165,11 @@ where
         )
     });
 
-    c.bench_function(&format!("{} mul-latency", name), |b| {
+    c.bench_function(&format!("{} mul-latency-10k", name), |b| {
         b.iter_batched(
             || rng.gen::<F>(),
             |mut x| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x * x;
                 }
                 x
@@ -178,7 +178,7 @@ where
         )
     });
 
-    c.bench_function(&format!("{} square-throughput", name), |b| {
+    c.bench_function(&format!("{} square-throughput-10k", name), |b| {
         b.iter_batched(
             || {
                 (
@@ -189,7 +189,7 @@ where
                 )
             },
             |(mut x, mut y, mut z, mut w)| {
-                for _ in 0..25 {
+                for _ in 0..10000 {
                     (x, y, z, w) = (x.square(), y.square(), z.square(), w.square());
                 }
                 (x, y, z, w)
@@ -198,11 +198,11 @@ where
         )
     });
 
-    c.bench_function(&format!("{} square-latency", name), |b| {
+    c.bench_function(&format!("{} square-latency-10k", name), |b| {
         b.iter_batched(
             || rng.gen::<F>(),
             |mut x| {
-                for _ in 0..100 {
+                for _ in 0..10000 {
                     x = x.square();
                 }
                 x
