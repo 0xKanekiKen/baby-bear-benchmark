@@ -81,7 +81,7 @@ fn field_operations(c: &mut Criterion) {
     c.bench_function("neon square", |b| {
         let x = [rng.gen::<Base>(); 4];
         let mut res = PackedBabyBearNeon([Base::zero(); 4]);
-        b.iter(|| res = PackedBabyBearNeon(black_box(x)).square())
+        b.iter(|| res = black_box(PackedBabyBearNeon(black_box(x)).square()))
     });
 }
 
