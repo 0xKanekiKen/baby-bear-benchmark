@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "baby-bear",
+    "p3-baby-bear",
     "r0-baby-bear",
     "field",
     "maybe-rayon",
