@@ -278,6 +278,7 @@ impl Ord for Elem {
 }
 
 impl PartialOrd for Elem {
+    #[allow(clippy::non_canonical_partial_ord_impl)]
     fn partial_cmp(&self, rhs: &Self) -> Option<Ordering> {
         decode(self.ensure_valid().0).partial_cmp(&decode(rhs.ensure_valid().0))
     }
