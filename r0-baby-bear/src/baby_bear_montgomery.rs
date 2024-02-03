@@ -29,7 +29,7 @@ use bytemuck::{Pod, Zeroable};
 #[cfg(test)]
 use super::tests as field_tests;
 
-use super::{*, Elem as FieldElem};
+use super::{Elem as FieldElem, *};
 
 /// Definition of this field for operations that operate on the baby
 /// bear field and its 4th degree extension.
@@ -713,7 +713,7 @@ mod tests {
 
     use rand::{Rng, SeedableRng};
 
-    use super::{*, Elem, ExtElem, P, P_U64};
+    use super::{Elem, ExtElem, P, P_U64, *};
 
     #[test]
     pub fn roots_of_unity() {

@@ -21,7 +21,7 @@ use core::{
 #[cfg(test)]
 use super::tests as field_tests;
 
-use super::{*, Elem as FieldElem};
+use super::{Elem as FieldElem, *};
 
 use bytemuck::{Pod, Zeroable};
 
@@ -477,10 +477,9 @@ const fn const_ensure_valid(x: Elem) -> Elem {
     x
 }
 
-
 impl ExtElem {
-     /// Explicitly construct an ExtElem from parts.
-     pub const fn new(x0: Elem, x1: Elem, x2: Elem, x3: Elem) -> Self {
+    /// Explicitly construct an ExtElem from parts.
+    pub const fn new(x0: Elem, x1: Elem, x2: Elem, x3: Elem) -> Self {
         Self([
             const_ensure_valid(x0),
             const_ensure_valid(x1),
@@ -631,7 +630,7 @@ impl From<Elem> for ExtElem {
 mod tests {
     use rand::SeedableRng;
 
-    use super::{*, Elem, ExtElem, P, P_U64};
+    use super::{Elem, ExtElem, P, P_U64, *};
 
     #[test]
     pub fn roots_of_unity() {

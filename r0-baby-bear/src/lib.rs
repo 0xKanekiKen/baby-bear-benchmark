@@ -16,7 +16,7 @@
 //!
 //! Defines base fields and extension fields used for finite field-based
 //! operations across the RISC Zero zkVM architecture
-//! 
+//!
 
 extern crate alloc;
 

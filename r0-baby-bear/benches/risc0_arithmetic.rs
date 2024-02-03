@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion, BatchSize};
+use criterion::{black_box, criterion_group, criterion_main, BatchSize, Criterion};
 use r0_baby_bear::{baby_bear_canonical, baby_bear_montgomery, Elem};
 use rand_core::SeedableRng;
 
@@ -7,8 +7,7 @@ type Montgomery = baby_bear_montgomery::BabyBearElem;
 type CanonicalExt = baby_bear_canonical::BabyBearExtElem;
 type MontgomeryExt = baby_bear_montgomery::BabyBearExtElem;
 
-pub fn benchmark<F: Elem>(c: &mut Criterion, name: &str)
-{
+pub fn benchmark<F: Elem>(c: &mut Criterion, name: &str) {
     let mut rng = rand::rngs::SmallRng::seed_from_u64(2);
     c.bench_function(&format!("{} square", name), |b| {
         let x = F::random(&mut rng);
@@ -136,10 +135,14 @@ pub fn benchmark<F: Elem>(c: &mut Criterion, name: &str)
 
     c.bench_function(&format!("{} mul-throughput-10k", name), |b| {
         b.iter_batched(
-            || (F::random(&mut rng),
-            F::random(&mut rng),
-            F::random(&mut rng),
-            F::random(&mut rng),),
+            || {
+                (
+                    F::random(&mut rng),
+                    F::random(&mut rng),
+                    F::random(&mut rng),
+                    F::random(&mut rng),
+                )
+            },
             |(mut x, mut y, mut z, mut w)| {
                 for _ in 0..10000 {
                     (x, y, z, w) = (x * y, y * z, z * w, w * x);
@@ -165,13 +168,22 @@ pub fn benchmark<F: Elem>(c: &mut Criterion, name: &str)
 
     c.bench_function(&format!("{} sqr-throughput-10k", name), |b| {
         b.iter_batched(
-            || (F::random(&mut rng),
-            F::random(&mut rng),
-            F::random(&mut rng),
-            F::random(&mut rng),),
+            || {
+                (
+                    F::random(&mut rng),
+                    F::random(&mut rng),
+                    F::random(&mut rng),
+                    F::random(&mut rng),
+                )
+            },
             |(mut x, mut y, mut z, mut w)| {
                 for _ in 0..10000 {
-                    (x, y, z, w) = (x.clone() * x.clone(), y.clone() * y.clone(), z.clone() * z.clone(), w.clone() * w.clone());
+                    (x, y, z, w) = (
+                        x.clone() * x.clone(),
+                        y.clone() * y.clone(),
+                        z.clone() * z.clone(),
+                        w.clone() * w.clone(),
+                    );
                 }
                 (x, y, z, w)
             },
@@ -191,7 +203,6 @@ pub fn benchmark<F: Elem>(c: &mut Criterion, name: &str)
             BatchSize::SmallInput,
         )
     });
-
 }
 
 fn bench_babybear(c: &mut Criterion) {
